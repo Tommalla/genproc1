@@ -22,33 +22,6 @@ inline int pkt::conv()
 	return x + y * WID;
 }
 
-//BLABLLLLLGH
-
-void pkt_kju::add(pkt a)
-{
-	kju[qhead++] = a;
-}
-
-pkt pkt_kju::pop()
-{
-	return kju[qtail++];
-}
-
-bool pkt_kju::empty()
-{
-	return qhead == qtail;
-}
-
-void pkt_kju::clear()
-{
-	qhead = qtail = 0;
-}
-
-pkt_kju::pkt_kju()
-{
-	qhead = qtail = 0;
-}
-
 void smooth(bool * field, int area, int powah, int wid, int hei)
 {
 	bool strawfield[wid * hei];
