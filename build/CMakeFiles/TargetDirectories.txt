@@ -1,0 +1,1 @@
+/home/squadack/qt/gen/WORLD/build/src/CMakeFiles/WORLD.dir

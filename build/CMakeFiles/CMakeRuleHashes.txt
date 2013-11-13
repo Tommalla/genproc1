@@ -1,0 +1,2 @@
+# Hashes of file build rules.
+93e97d4b1f8afd3e69f3b65bdad342bd src/moc_pktnkju.cpp
