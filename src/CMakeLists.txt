@@ -1,10 +1,12 @@
 set (WORLD_SRCS
 	main.cpp
-	pktnkju.cpp
+	pkt.cpp
+	calc.cpp
 )
 
 set (WORLD_HDRS
-	pktnkju.hpp
+	pkt.hpp
+	calc.hpp
 )
 
 qt5_wrap_cpp (WORLD_SRCS ${WORLD_HDRS})
