@@ -31,6 +31,8 @@ class MainWindow : public QMainWindow {
 		//virtual void resizeEvent (QResizeEvent* event);
 		~MainWindow();
 
+		virtual void keyPressEvent(QKeyEvent*);
+
 	private slots:
 		void generateMap();
 		void changeWaterBox(int state);

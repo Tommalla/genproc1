@@ -5,12 +5,13 @@
 #include <QGraphicsPixmapItem>
 #include <QFileDialog>
 #include <QDir>
+#include <QKeyEvent>
 #include "MainWindow.hpp"
 #include "calc.hpp"
 #include "ui_MainWindow.h"
 
-const qint32 defaultWidth = 1920, defaultHeight = 800, defaultStartingPoints = 20, defaultExpProb = 2500,
-		defaultPointlessSize = 100, defaultForce = 3, defaultField = 2;
+const qint32 defaultWidth = 800, defaultHeight = 600, defaultStartingPoints = 120, defaultExpProb = 2525,
+		defaultPointlessSize = 200, defaultForce = 3, defaultField = 2;
 
 void MainWindow::setDefaults() {
 	ui->widthEdit->setText(QString::number(defaultWidth));
@@ -53,6 +54,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 MainWindow::~MainWindow() {
 	delete ui;
 }
+
+void MainWindow::keyPressEvent(QKeyEvent* e) {
+    QWidget::keyPressEvent(e);
+    if (e->key() == Qt::Key_Return)
+	    generateMap();
+}
+
 
 void MainWindow::generateMap() {
 	qint32 width, height;
