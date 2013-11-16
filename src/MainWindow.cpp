@@ -79,7 +79,10 @@ void MainWindow::generateMap() {
 	}
 
 	//TODO apply filters
+	if (ui->pointlessWaterCheckbox->isChecked())
+		filters::removePointlessWater(*map, ui->pointlessSizeEdit->text().toUInt());
 
+	//generate the image from the map
 	if (mapImage.width() != width || mapImage.height() != height)
 		mapImage = QImage(width, height, QImage::Format_RGB32);
 
@@ -87,8 +90,11 @@ void MainWindow::generateMap() {
 		for (qint32 j = 0; j < height; ++j) {
 			qint32 h = map->heightAt(i, j);
 			Type t = map->typeAt(i, j);
-			mapImage.setPixel(i, j, (t == Type::LAND) ? landmap[h] : watermap[h]);
+
+			//FIXME this line is SLOW
+			mapImage.setPixel(i, j, ((t == Type::LAND) ? landmap[h] : watermap[h]));
 		}
+
 
 	//add the image to the scene
 	QGraphicsScene* scene = ui->graphicsView->scene();
@@ -111,8 +117,6 @@ void MainWindow::save() {
 
 	if (filename.length() == 0)
 		return;
-
-	printf("Saving to %s\n", filename.toStdString().c_str());
 
 	mapImage.save(filename + ".png");
 }

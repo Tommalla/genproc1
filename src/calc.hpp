@@ -10,8 +10,8 @@ namespace generators {
 };
 
 namespace filters {
-	void smooth(bool *, int, int, int, int);
-	void removePointlessWater(bool * land, int pointless = 3);
+	void smooth(Map& map, qint32 field, qint32 force);
+	void removePointlessWater(Map& map, const qint32 pointless);
 }
 
 #endif

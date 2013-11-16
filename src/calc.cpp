@@ -1,5 +1,6 @@
 #include <QQueue>
 #include <QVector>
+#include <cassert>
 #include "Point.hpp"
 #include "calc.hpp"
 
@@ -38,12 +39,15 @@ void generators::cellular(Map& map, const qint32 startingPoints, const qint32 ex
 
 }
 
-void filters::smooth(bool * field, int area, int powah, int wid, int hei) {
-	/*
-	bool strawfield[wid * hei];
-	for (int i = 0; i < wid * hei; i++)
-		strawfield[i] = 0;
-	int acumulator = 0, noenoland = area * area - powah;
+void filters::smooth(Map& map, qint32 field, qint32 force) {
+	Map tmp(map.getWidth(), map.getHeight());
+	/*for (qint32 i = 0; i < tmp.getWidth(); ++i)
+		for (qint32 j = 0; j < tmp.getHeight(); ++j) {
+			tmp.heightAt(i, j) = -1;
+			tmp.typeAt(i, j) = Type::WATER;
+		}*/
+
+	/*int acumulator = 0, noenoland = area * area - powah;
 	Point pom;
 	for (int i = 0; i < wid - area; i++)
 		for (int j = 0; j < hei - area; j++)
@@ -69,23 +73,28 @@ void filters::smooth(bool * field, int area, int powah, int wid, int hei) {
 		if (strawfield[i])
 		field[i] = 1;
 	}*/
+	//TODO (to jakieś nieogarnięte jest)
 }
 
-void filters::removePointlessWater(bool * land, int pointless) {
-/*	int id[WID * HEI];
+void filters::removePointlessWater(Map& map, const qint32 pointless) {
+	qint32 id[map.getWidth() * map.getHeight()];
+
+	for (qint32 i = 0; i < map.getWidth() * map.getHeight(); ++i)
+		id[i] = 0;
+
 	QVector<QVector<Point>> lakes;
 	QQueue<Point> q;
 	Point p, next;
-	int curr = 1;
-	int idx;
+	qint32 curr = 1;
+	qint32 idx, idn;
 
-	int dir[][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+	qint32 dir[][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-	for (int i = 0; i < WID; ++i)
-		for (int j = 0; j < HEI; ++j) {
+	for (qint32 i = 0; i < map.getWidth(); ++i)
+		for (qint32 j = 0; j < map.getHeight(); ++j) {
 			p = Point(i, j);
-			idx = p.conv();
-			if (land[idx] == false && id[idx] == 0) {
+			idx = points::convert(i, j, map.getWidth());
+			if (map.typeAt(i, j) == Type::WATER && id[idx] == 0) {
 				id[idx] = curr++;
 				QVector<Point> tmp;
 				tmp.push_back(p);
@@ -96,14 +105,14 @@ void filters::removePointlessWater(bool * land, int pointless) {
 					p = q.front();
 					q.pop_front();
 
-					for (int k = 0; k < 4; ++k) {
+					for (qint8 k = 0; k < 4; ++k) {
 						next = Point(p.x + dir[k][0], p.y + dir[k][1]);
-						if (next.isCorrect()) {
-							idx = next.conv();
+						if (map.isPointValid(next.x, next.y)) {
+							idn = points::convert(next.x, next.y, map.getWidth());
 
-							if (land[idx] == false && id[idx] == 0) {
-								id[idx] = id[p.conv()];
-								lakes[id[idx] - 1].push_back(next);
+							if (map.typeAt(next.x, next.y) == Type::WATER && id[idn] == 0) {
+								id[idn] = id[idx];
+								lakes.back().push_back(next);
 								q.push_back(next);
 							}
 						}
@@ -112,9 +121,11 @@ void filters::removePointlessWater(bool * land, int pointless) {
 			}
 		}
 
-	for (int i = 0; i < lakes.size(); ++i)
-		if (lakes[i].size() <= pointless)
-			for (Point p: lakes[i])
-				land[p.conv()] = true;
-			*/
+	for (qint32 i = 0; i < lakes.size(); ++i)
+		if (lakes[i].size() <= pointless) {
+			for (Point p: lakes[i]) {
+				map.typeAt(p.x, p.y) = Type::LAND;
+				map.heightAt(p.x, p.y) = 0;
+			}
+		}
 }
