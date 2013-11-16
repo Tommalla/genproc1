@@ -3,6 +3,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <QFileDialog>
+#include <QDir>
 #include "MainWindow.hpp"
 #include "calc.hpp"
 #include "ui_MainWindow.h"
@@ -44,10 +46,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	//checkboxes
 	QObject::connect(ui->pointlessWaterCheckbox, &QCheckBox::stateChanged, this, &MainWindow::changeWaterBox);
 	QObject::connect(ui->smoothenCheckBox, &QCheckBox::stateChanged, this, &MainWindow::changeSmoothBox);
+
+	QObject::connect(ui->actionSave, &QAction::triggered, this, &MainWindow::save);
 }
 
 MainWindow::~MainWindow() {
-
 	delete ui;
 }
 
@@ -102,4 +105,15 @@ void MainWindow::changeSmoothBox(int state) {
 	ui->smoothenBox->setEnabled(state == 2);
 }
 
+void MainWindow::save() {
+	QString filename = QFileDialog::getSaveFileName(this,
+		tr("Save"), QDir::currentPath(), tr("PNG images (*.png)"));
+
+	if (filename.length() == 0)
+		return;
+
+	printf("Saving to %s\n", filename.toStdString().c_str());
+
+	mapImage.save(filename + ".png");
+}
 

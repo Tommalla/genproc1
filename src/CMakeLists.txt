@@ -1,6 +1,5 @@
 set (WORLD_SRCS
 	Map.cpp
-	AbstractGenerator.cpp
 	main.cpp
 	Point.cpp
 	calc.cpp
@@ -8,7 +7,6 @@ set (WORLD_SRCS
 
 set (WORLD_HDRS
 	Map.hpp
-	AbstractGenerator.hpp
 	Point.hpp
 	calc.hpp
 )

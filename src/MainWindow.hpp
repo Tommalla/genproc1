@@ -35,6 +35,7 @@ class MainWindow : public QMainWindow {
 		void generateMap();
 		void changeWaterBox(int state);
 		void changeSmoothBox(int state);
+		void save();
 };
 
 
