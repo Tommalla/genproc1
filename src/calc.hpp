@@ -1,12 +1,17 @@
 #ifndef CALC_HPP
 #define CALC_HPP
+#include "Map.hpp"
 
-const int WID = 1920, HEI = 800, W_MID = WID >> 1, H_MID = HEI >> 1, MAX = 10000;
+const qint32 maxProb = 10000;
 
-void generate(bool* land, const int startingPoints, const int expProb);
+namespace generators {
+	void cellular(Map& map, const qint32 startingPoints, const qint32 expProb);
+	//Map perlinsNoise(const qint32 width, const qint32 height);
+};
 
-void smooth(bool *, int, int, int, int);
-
-void removePointlessWater(bool * land, int pointless = 3);
+namespace filters {
+	void smooth(bool *, int, int, int, int);
+	void removePointlessWater(bool * land, int pointless = 3);
+}
 
 #endif

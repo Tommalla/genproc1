@@ -1,57 +1,64 @@
-#include "pkt.hpp"
-#include "calc.hpp"
 #include <QQueue>
 #include <QVector>
+#include "Point.hpp"
+#include "calc.hpp"
 
-void generate(bool* land, const int startingPoints, const int expProb)
-{
-	QQueue<pkt> kolej;
-	pkt a, b;
-	for (int i = 0; i < startingPoints; i++)
-	{
-		a.randum();
+void generators::cellular(Map& map, const qint32 startingPoints, const qint32 expProb) {
+	QQueue<Point> kolej;
+	Point a, b;
+
+	for (qint32 i = 0; i < map.getWidth(); ++i)
+		for (qint32 j = 0; j < map.getHeight(); ++j) {
+			map.heightAt(i, j) = -1;
+			map.typeAt(i, j) = Type::WATER;
+		}
+
+	for (int i = 0; i < startingPoints; i++) {
+		a.randum(map.getWidth(), map.getHeight());
 		kolej.push_back(a);
-		land[a.conv()] = true;
+		map.heightAt(a.x, a.y) = 0;
+		map.typeAt(a.x, a.y) = Type::LAND;
 	}
 
-	while (!kolej.empty())
-	{
+	while (!kolej.empty()) {
 		a = kolej.front();
 		kolej.pop_front();
 		for (int i = -1; i <= 1; i++)
 			for (int j = -1; j <= 1; j++)
 			{
-				b = pkt(a.x + i, a.y + j);
-				if (!land[b.conv()] && b.x >= 0 && b.x < WID && b.y >= 0 && b.y < HEI && rand() % MAX < expProb)
+				b = Point(a.x + i, a.y + j);
+				if (map.isPointValid(b.x, b.y) && map.heightAt(b.x, b.y) == -1 && rand() % maxProb < expProb)
 				{
-					land[b.conv()] = true;
+					map.heightAt(b.x, b.y) = 0;
+					map.typeAt(b.x, b.y) = Type::LAND;
 					kolej.push_back(b);
 				}
 			}
 	}
+
 }
 
-void smooth(bool * field, int area, int powah, int wid, int hei)
-{
+void filters::smooth(bool * field, int area, int powah, int wid, int hei) {
+	/*
 	bool strawfield[wid * hei];
 	for (int i = 0; i < wid * hei; i++)
 		strawfield[i] = 0;
 	int acumulator = 0, noenoland = area * area - powah;
-	pkt pom;
+	Point pom;
 	for (int i = 0; i < wid - area; i++)
 		for (int j = 0; j < hei - area; j++)
 		{
 			for (int e = 0; e < area; e++)
 				for (int f = 0; f < area; f++)
 				{
-					pom = pkt(i + e, j + f);
+					pom = Point(i + e, j + f);
 					acumulator += field[pom.conv()];
 				}
 			if (acumulator >= noenoland)
 				for (int e = 0; e < area; e++)
 					for (int f = 0; f < area; f++)
 					{
-						pom = pkt(i + e, j + f);
+						pom = Point(i + e, j + f);
 						strawfield[pom.conv()] = 1;
 					}
 			acumulator = 0;
@@ -61,18 +68,14 @@ void smooth(bool * field, int area, int powah, int wid, int hei)
 	{
 		if (strawfield[i])
 		field[i] = 1;
-	}
+	}*/
 }
 
-void removePointlessWater(bool * land, int pointless) {
-	int id[WID * HEI];
-
-	for (int i = 0; i < WID * HEI; ++i)
-		id[i] = 0;
-
-	QVector<QVector<pkt>> lakes;
-	QQueue<pkt> q;
-	pkt p, next;
+void filters::removePointlessWater(bool * land, int pointless) {
+/*	int id[WID * HEI];
+	QVector<QVector<Point>> lakes;
+	QQueue<Point> q;
+	Point p, next;
 	int curr = 1;
 	int idx;
 
@@ -80,11 +83,11 @@ void removePointlessWater(bool * land, int pointless) {
 
 	for (int i = 0; i < WID; ++i)
 		for (int j = 0; j < HEI; ++j) {
-			p = pkt(i, j);
+			p = Point(i, j);
 			idx = p.conv();
 			if (land[idx] == false && id[idx] == 0) {
 				id[idx] = curr++;
-				QVector<pkt> tmp;
+				QVector<Point> tmp;
 				tmp.push_back(p);
 				lakes.push_back(tmp);
 				q.push_back(p);
@@ -94,7 +97,7 @@ void removePointlessWater(bool * land, int pointless) {
 					q.pop_front();
 
 					for (int k = 0; k < 4; ++k) {
-						next = pkt(p.x + dir[k][0], p.y + dir[k][1]);
+						next = Point(p.x + dir[k][0], p.y + dir[k][1]);
 						if (next.isCorrect()) {
 							idx = next.conv();
 
@@ -111,6 +114,7 @@ void removePointlessWater(bool * land, int pointless) {
 
 	for (int i = 0; i < lakes.size(); ++i)
 		if (lakes[i].size() <= pointless)
-			for (pkt p: lakes[i])
+			for (Point p: lakes[i])
 				land[p.conv()] = true;
+			*/
 }
