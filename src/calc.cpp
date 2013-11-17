@@ -66,6 +66,10 @@ void smooth(bool * field, int area, int powah, int wid, int hei)
 
 void removePointlessWater(bool * land, int pointless) {
 	int id[WID * HEI];
+
+	for (int i = 0; i < WID * HEI; ++i)
+		id[i] = 0;
+
 	QVector<QVector<pkt>> lakes;
 	QQueue<pkt> q;
 	pkt p, next;
