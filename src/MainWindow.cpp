@@ -49,6 +49,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	QObject::connect(ui->smoothenCheckBox, &QCheckBox::stateChanged, this, &MainWindow::changeSmoothBox);
 
 	QObject::connect(ui->actionSave, &QAction::triggered, this, &MainWindow::save);
+
+	QObject::connect(ui->methodBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+			 this, &MainWindow::changeAlgorithm);
 }
 
 MainWindow::~MainWindow() {
@@ -84,6 +87,12 @@ void MainWindow::generateMap() {
 			break;
 		default:
 			return;
+	}
+
+	switch (ui->fillerBox->currentIndex()) {
+		case 0:
+			fillers::standard(*map);
+			break;
 	}
 
 	//TODO apply filters
@@ -128,4 +137,9 @@ void MainWindow::save() {
 
 	mapImage.save(filename + ".png");
 }
+
+void MainWindow::changeAlgorithm(qint32 id) {
+	ui->algOptsStackedWidget->setCurrentIndex(id);
+}
+
 

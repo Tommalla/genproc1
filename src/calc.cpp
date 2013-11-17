@@ -9,16 +9,13 @@ void generators::cellular(Map& map, const qint32 startingPoints, const qint32 ex
 	Point a, b;
 
 	for (qint32 i = 0; i < map.getWidth(); ++i)
-		for (qint32 j = 0; j < map.getHeight(); ++j) {
+		for (qint32 j = 0; j < map.getHeight(); ++j)
 			map.heightAt(i, j) = -1;
-			map.typeAt(i, j) = Type::WATER;
-		}
 
 	for (int i = 0; i < startingPoints; i++) {
 		a.randum(map.getWidth(), map.getHeight());
 		kolej.push_back(a);
 		map.heightAt(a.x, a.y) = 0;
-		map.typeAt(a.x, a.y) = Type::LAND;
 	}
 
 	while (!kolej.empty()) {
@@ -31,12 +28,30 @@ void generators::cellular(Map& map, const qint32 startingPoints, const qint32 ex
 				if (map.isPointValid(b.x, b.y) && map.heightAt(b.x, b.y) == -1 && rand() % maxProb < expProb)
 				{
 					map.heightAt(b.x, b.y) = 0;
-					map.typeAt(b.x, b.y) = Type::LAND;
 					kolej.push_back(b);
 				}
 			}
 	}
 
+}
+
+void generators::perlinsNoise(Map& map) {
+	//TODO create an array of random gradients
+	//TODO foreach point calculate the result
+}
+
+void fillers::standard(Map& map) {
+	for (qint32 i = 0; i < map.getWidth(); ++i)
+		for (qint32 j = 0; j < map.getHeight(); ++j) {
+			Height h = map.heightAt(i, j);
+			Type t;
+			if (h <= -1)
+				t = Type::WATER;
+			else if (h >= 0)
+				t = Type::LAND;
+
+			map.typeAt(i, j) = t;
+		}
 }
 
 void filters::smooth(Map& map, qint32 field, qint32 force) {

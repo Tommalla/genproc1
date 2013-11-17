@@ -28,16 +28,16 @@ class MainWindow : public QMainWindow {
 
 	public:
 		explicit MainWindow(QWidget *parent = 0);
-		//virtual void resizeEvent (QResizeEvent* event);
 		~MainWindow();
 
-		virtual void keyPressEvent(QKeyEvent*);
+		virtual void keyPressEvent(QKeyEvent* e);
 
 	private slots:
 		void generateMap();
 		void changeWaterBox(int state);
 		void changeSmoothBox(int state);
 		void save();
+		void changeAlgorithm(qint32 id);
 };
 
 

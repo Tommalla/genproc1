@@ -6,12 +6,16 @@ const qint32 maxProb = 10000;
 
 namespace generators {
 	void cellular(Map& map, const qint32 startingPoints, const qint32 expProb);
-	//Map perlinsNoise(const qint32 width, const qint32 height);
+	void perlinsNoise(Map& map);
+};
+
+namespace fillers {
+	void standard(Map& map);
 };
 
 namespace filters {
 	void smooth(Map& map, qint32 field, qint32 force);
 	void removePointlessWater(Map& map, const qint32 pointless);
-}
+};
 
 #endif

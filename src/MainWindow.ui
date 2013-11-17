@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>616</height>
+    <height>635</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,18 +40,6 @@
        <string>Options</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="sizeConstraint">
-        <enum>QLayout::SetMinimumSize</enum>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
        <item>
         <widget class="QLabel" name="label_7">
          <property name="sizePolicy">
@@ -204,11 +192,6 @@
             <bool>true</bool>
            </property>
           </widget>
-          <zorder>startingPointsEdit</zorder>
-          <zorder>probabilityEdit</zorder>
-          <zorder>label_2</zorder>
-          <zorder>label_3</zorder>
-          <zorder>groupBox_2</zorder>
          </widget>
          <widget class="QWidget" name="page">
           <widget class="QLabel" name="label_9">
@@ -225,6 +208,22 @@
            </property>
           </widget>
          </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Filling method</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="fillerBox">
+         <item>
+          <property name="text">
+           <string>Standard</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -295,9 +294,6 @@
               <string>Pointless lake size</string>
              </property>
             </widget>
-            <zorder>pointlessSizeEdit</zorder>
-            <zorder>label_4</zorder>
-            <zorder>smoothenBox</zorder>
            </widget>
           </item>
           <item>
