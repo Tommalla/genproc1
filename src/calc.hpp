@@ -6,7 +6,7 @@ const qint32 maxProb = 10000;
 
 namespace generators {
 	void cellular(Map& map, const qint32 startingPoints, const qint32 expProb);
-	void perlinsNoise(Map& map);
+	void perlinsNoise(Map& map, const qint16 accuracy, const qint8 minHeight, const qint8 maxHeight);
 };
 
 namespace fillers {

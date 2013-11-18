@@ -35,9 +35,73 @@ void generators::cellular(Map& map, const qint32 startingPoints, const qint32 ex
 
 }
 
-void generators::perlinsNoise(Map& map) {
-	//TODO create an array of random gradients
-	//TODO foreach point calculate the result
+qreal cosInterpolate(const qreal a, const qreal m, const qreal b) {
+	qreal m2 = (1.0f - cos(m * M_PI)) * 0.5f;
+	return a * (1.0f - m2) + b * m2;
+}
+
+void generators::perlinsNoise(Map& map, const qint16 accuracy, const qint8 minHeight, const qint8 maxHeight) {
+	qint32 size = map.getWidth() * map.getHeight();
+
+	qreal* res = new qreal[size];
+	qreal* tab[2];
+	for (qint8 i = 0; i < 2; ++i)
+		tab[i] = new qreal[size];
+
+	qint8 id = 0, next = 0, hRange = maxHeight - minHeight;
+
+	for (qint32 i = 0; i < size; ++i) {
+		tab[0][i] = static_cast<qreal>(rand()) / RAND_MAX;
+		res[i] = tab[0][i] * (0.5f / accuracy);
+	}
+
+	for (qint16 n = 2; n <= accuracy; ++n, id = next) {
+		next = (id + 1) % 2;
+		for (qint32 i = 0; i < map.getWidth(); ++i)
+			for (qint32 j = 0; j < map.getHeight(); ++j) {
+				qint32 id1, id2;	// = points::convert(i, j, map.getWidth());
+				qint32 x0, y0, x1, y1;
+				//calculate the grid coordinate
+				x0 = i / n;
+				x1 = i / n + 1;
+				y0 = j / n;
+				y1 = j / n + 1;
+
+				//interpolate
+				qreal int0, int1;
+				id1 = points::convert(x0, y0, map.getWidth());
+				id2 = points::convert(x1, y0, map.getWidth());
+				int0 = cosInterpolate(tab[id][id1], (i - x0 * n) / (qreal)(n * (x1 - x0)), tab[id][id2]);
+				id1 = points::convert(x0, y1, map.getWidth());
+				id2 = points::convert(x1, y1, map.getWidth());
+				int1 = cosInterpolate(tab[id][id1], (i - x0 * n) / (qreal)(n * (x1 - x0)), tab[id][id2]);
+
+				tab[next][points::convert(i, j, map.getWidth())] =
+					cosInterpolate(int0, (j - y0 * n) / (qreal)(n * (y1 - y0)), int1);
+			}
+
+		for (qint32 i = 0; i < map.getWidth(); ++i)
+			for (qint32 j = 0; j < map.getHeight(); ++j) {
+				qint32 idx = points::convert(i, j, map.getWidth());
+				res[idx] += tab[next][idx] * (0.5f / (accuracy - n + 1)) + tab[id][idx];
+			}
+	}
+
+
+
+	for (qint32 i = 0; i < map.getWidth(); ++i)
+		for (qint32 j = 0; j < map.getHeight(); ++j) {
+			/*printf("%f * %d + %d = %d\n", tab[points::convert(i, j, map.getWidth())][id], hRange, minHeight,
+			       static_cast<qint8>(round(tab[points::convert(i, j, map.getWidth())][id] * hRange)) + minHeight);*/
+			map.heightAt(i, j) = static_cast<qint8>(round(tab[id][points::convert(i, j, map.getWidth())] * hRange))
+			+ minHeight;
+		}
+
+	delete[] res;
+	delete[] tab[1];
+	delete[] tab[0];
+
+	return;
 }
 
 void fillers::standard(Map& map) {

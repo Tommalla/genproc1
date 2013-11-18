@@ -11,17 +11,25 @@
 #include "ui_MainWindow.h"
 
 const qint32 defaultWidth = 800, defaultHeight = 600, defaultStartingPoints = 120, defaultExpProb = 2525,
-		defaultPointlessSize = 200, defaultForce = 3, defaultField = 2;
+		defaultPointlessSize = 200, defaultForce = 3, defaultField = 2, defaultAccuracy = 3,
+		defaultMinHeight = -1, defaultMaxHeight = 1;
 
 void MainWindow::setDefaults() {
 	ui->widthEdit->setText(QString::number(defaultWidth));
 	ui->heightEdit->setText(QString::number(defaultHeight));
+
 	ui->startingPointsEdit->setText(QString::number(defaultStartingPoints));
 	ui->probabilityEdit->setText(QString::number(defaultExpProb));
+
+	ui->accuracyEdit->setText(QString::number(defaultAccuracy));
+	ui->minHEdit->setText(QString::number(defaultMinHeight));
+	ui->maxHEdit->setText(QString::number(defaultMaxHeight));
 
 	ui->pointlessSizeEdit->setText(QString::number(defaultPointlessSize));
 	ui->forceEdit->setText(QString::number(defaultForce));
 	ui->fieldEdit->setText(QString::number(defaultField));
+
+
 }
 
 
@@ -83,8 +91,13 @@ void MainWindow::generateMap() {
 			break;
 		}
 		case 1:
-			//TODO perlin's
+		{
+			qint16 accuracy = ui->accuracyEdit->text().toUShort();
+			qint8 minHeight = ui->minHEdit->text().toShort();
+			qint8 maxHeight = ui->maxHEdit->text().toShort();
+			generators::perlinsNoise(*map, accuracy, minHeight, maxHeight);
 			break;
+		}
 		default:
 			return;
 	}
