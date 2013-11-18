@@ -16,6 +16,7 @@ namespace fillers {
 namespace filters {
 	void smooth(Map& map, qint32 field, qint32 force);
 	void removePointlessWater(Map& map, const qint32 pointless);
+	void rationalize(Map& map, const qint32 frame);
 };
 
 #endif

@@ -12,7 +12,7 @@
 
 const qint32 defaultWidth = 800, defaultHeight = 600, defaultStartingPoints = 120, defaultExpProb = 2525,
 		defaultPointlessSize = 200, defaultForce = 3, defaultField = 2, defaultAccuracy = 3,
-		defaultMinHeight = -1, defaultMaxHeight = 1;
+		defaultMinHeight = -1, defaultMaxHeight = 1, defaultFrame = 1;
 
 void MainWindow::setDefaults() {
 	ui->widthEdit->setText(QString::number(defaultWidth));
@@ -26,9 +26,9 @@ void MainWindow::setDefaults() {
 	ui->maxHEdit->setText(QString::number(defaultMaxHeight));
 
 	ui->pointlessSizeEdit->setText(QString::number(defaultPointlessSize));
+	ui->rationalizeFieldEdit->setText(QString::number(defaultFrame));
 	ui->forceEdit->setText(QString::number(defaultForce));
 	ui->fieldEdit->setText(QString::number(defaultField));
-
 
 }
 
@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 	changeSmoothBox(0);
 	changeWaterBox(0);
+	changeRationalize(0);
 
 	//connect the components
 	QObject::connect(ui->generateButton, &QPushButton::clicked, this, &MainWindow::generateMap);
@@ -55,6 +56,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	//checkboxes
 	QObject::connect(ui->pointlessWaterCheckbox, &QCheckBox::stateChanged, this, &MainWindow::changeWaterBox);
 	QObject::connect(ui->smoothenCheckBox, &QCheckBox::stateChanged, this, &MainWindow::changeSmoothBox);
+	QObject::connect(ui->rationalizeCheckbox, &QCheckBox::stateChanged, this, &MainWindow::changeRationalize);
 
 	QObject::connect(ui->actionSave, &QAction::triggered, this, &MainWindow::save);
 
@@ -102,6 +104,9 @@ void MainWindow::generateMap() {
 			return;
 	}
 
+	if (ui->rationalizeCheckbox->isChecked())
+		filters::rationalize(*map, ui->rationalizeFieldEdit->text().toUInt());
+
 	switch (ui->fillerBox->currentIndex()) {
 		case 0:
 			fillers::standard(*map);
@@ -140,6 +145,11 @@ void MainWindow::changeWaterBox(int state) {
 void MainWindow::changeSmoothBox(int state) {
 	ui->smoothenBox->setEnabled(state == 2);
 }
+
+void MainWindow::changeRationalize(int state) {
+	ui->rationalizeBox->setEnabled(state == 2);
+}
+
 
 void MainWindow::save() {
 	QString filename = QFileDialog::getSaveFileName(this,

@@ -1,5 +1,7 @@
 #include <QQueue>
 #include <QVector>
+#include <qhash.h>
+#include <qabstractitemmodel.h>
 #include <cassert>
 #include "Point.hpp"
 #include "calc.hpp"
@@ -52,7 +54,7 @@ void generators::perlinsNoise(Map& map, const qint16 accuracy, const qint8 minHe
 
 	for (qint32 i = 0; i < size; ++i) {
 		tab[0][i] = static_cast<qreal>(rand()) / RAND_MAX;
-		res[i] = tab[0][i] * (0.5f / accuracy);
+		res[i] = tab[0][i] * (1.0f / pow(2.0f, (accuracy)));
 	}
 
 	for (qint16 n = 2; n <= accuracy; ++n, id = next) {
@@ -83,17 +85,26 @@ void generators::perlinsNoise(Map& map, const qint16 accuracy, const qint8 minHe
 		for (qint32 i = 0; i < map.getWidth(); ++i)
 			for (qint32 j = 0; j < map.getHeight(); ++j) {
 				qint32 idx = points::convert(i, j, map.getWidth());
-				res[idx] += tab[next][idx] * (0.5f / (accuracy - n + 1)) + tab[id][idx];
+				res[idx] += tab[next][idx] * (1.0f / pow(2.0f, (accuracy - n + 1)));
 			}
 	}
 
+	qreal minimum, maximum, range;
+	minimum = maximum = res[0];
+	for (qint32 i = 0; i < size; ++i) {
+		minimum = qMin(minimum, res[i]);
+		maximum = qMax(maximum, res[i]);
+	}
 
+	range = maximum - minimum;
+	for (qint32 i = 0; i < size; ++i)
+		res[i] = (res[i] - minimum) / range;
 
 	for (qint32 i = 0; i < map.getWidth(); ++i)
 		for (qint32 j = 0; j < map.getHeight(); ++j) {
 			/*printf("%f * %d + %d = %d\n", tab[points::convert(i, j, map.getWidth())][id], hRange, minHeight,
 			       static_cast<qint8>(round(tab[points::convert(i, j, map.getWidth())][id] * hRange)) + minHeight);*/
-			map.heightAt(i, j) = static_cast<qint8>(round(tab[id][points::convert(i, j, map.getWidth())] * hRange))
+			map.heightAt(i, j) = static_cast<qint8>(round(res[points::convert(i, j, map.getWidth())] * hRange))
 			+ minHeight;
 		}
 
@@ -207,4 +218,47 @@ void filters::removePointlessWater(Map& map, const qint32 pointless) {
 				map.heightAt(p.x, p.y) = 0;
 			}
 		}
+}
+
+void filters::rationalize(Map& map, const qint32 frame) {
+	QHash<Height, qint32> m;
+	Height* res = new Height[map.getHeight() * map.getWidth()];
+
+	for (qint32 i = 0; i < map.getWidth(); ++i) {
+		m.clear();
+
+		for (qint32 x = i; x < qMin(i + frame + 1, map.getWidth()); ++x)
+			for (qint32 y = 0; y < qMin(frame + 1, map.getHeight()); ++y)
+				m[map.heightAt(x, y)]++;
+
+		for (qint32 j = 0; j < map.getHeight(); ++j) {
+			qint32 maxim = 0;
+			Height maxH = map.heightAt(i, j);
+			for (QHash<Height, qint32>::const_iterator iter = m.cbegin(); iter != m.cend(); ++iter)
+				if (iter.value() > 0 && iter.value() >= maxim) {
+					maxim = iter.value();
+					maxH = iter.key();
+				}
+
+			res[points::convert(i, j, map.getWidth())] = maxH;
+
+			if (j + frame < map.getHeight())
+				for (qint32 k = qMax(0, i - frame); k <= qMin(i + frame, map.getWidth() - 1); ++k)
+					m[map.heightAt(k, j + frame)]++;
+
+			if (j >= frame)
+				for (qint32 k = qMax(0, i - frame); k <= qMin(i + frame, map.getWidth() - 1); ++k) {
+					Height h = map.heightAt(k, j - frame);
+					if (m[h] <= 1)
+						m.remove(h);
+					else m[h]--;
+				}
+		}
+	}
+
+	for (qint32 i = 0; i < map.getWidth(); ++i)
+		for (qint32 j = 0; j < map.getHeight(); ++j)
+			map.heightAt(i, j) = res[points::convert(i, j, map.getWidth())];
+
+	delete[] res;
 }
