@@ -45,6 +45,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 	watermap[-1] = qRgb(0, 127, 255);
 	landmap[0] = qRgb(123, 216, 69);
+	landmap[1] = qRgb(0, 139, 69);
+	landmap[2] = qRgb(238, 64, 0);
 
 	changeSmoothBox(0);
 	changeWaterBox(0);

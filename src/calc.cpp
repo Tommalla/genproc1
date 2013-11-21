@@ -61,25 +61,28 @@ void generators::perlinsNoise(Map& map, const qint16 accuracy, const qint8 minHe
 		next = (id + 1) % 2;
 		for (qint32 i = 0; i < map.getWidth(); ++i)
 			for (qint32 j = 0; j < map.getHeight(); ++j) {
-				qint32 id1, id2;	// = points::convert(i, j, map.getWidth());
-				qint32 x0, y0, x1, y1;
+				qint32 x[2], y[2], realX0, realY0;
 				//calculate the grid coordinate
-				x0 = i / n;
-				x1 = i / n + 1;
-				y0 = j / n;
-				y1 = j / n + 1;
+				x[0] = i / n;
+				x[1] = i / n + 1;
+				y[0] = j / n;
+				y[1] = j / n + 1;
+
+				realX0 = x[0] * n;
+				realY0 = y[0] * n;
 
 				//interpolate
-				qreal int0, int1;
-				id1 = points::convert(x0, y0, map.getWidth());
-				id2 = points::convert(x1, y0, map.getWidth());
-				int0 = cosInterpolate(tab[id][id1], (i - x0 * n) / (qreal)(n * (x1 - x0)), tab[id][id2]);
-				id1 = points::convert(x0, y1, map.getWidth());
-				id2 = points::convert(x1, y1, map.getWidth());
-				int1 = cosInterpolate(tab[id][id1], (i - x0 * n) / (qreal)(n * (x1 - x0)), tab[id][id2]);
+				qreal inter[2];
+				qint32 idx[2];
+				for (qint8 k = 0; k < 2; ++k) {
+					for (qint8 l = 0; l < 2; ++l)
+						idx[l] = points::convert(x[l], y[k], map.getWidth());
+					inter[k] = cosInterpolate(tab[id][idx[0]],
+						(i - realX0) / (qreal)(n * (x[1] - x[0])), tab[id][idx[1]]);
+				}
 
 				tab[next][points::convert(i, j, map.getWidth())] =
-					cosInterpolate(int0, (j - y0 * n) / (qreal)(n * (y1 - y0)), int1);
+					cosInterpolate(inter[0], (j - realY0) / (qreal)(n * (y[1] - y[0])), inter[1]);
 			}
 
 		for (qint32 i = 0; i < map.getWidth(); ++i)
@@ -101,12 +104,9 @@ void generators::perlinsNoise(Map& map, const qint16 accuracy, const qint8 minHe
 		res[i] = (res[i] - minimum) / range;
 
 	for (qint32 i = 0; i < map.getWidth(); ++i)
-		for (qint32 j = 0; j < map.getHeight(); ++j) {
-			/*printf("%f * %d + %d = %d\n", tab[points::convert(i, j, map.getWidth())][id], hRange, minHeight,
-			       static_cast<qint8>(round(tab[points::convert(i, j, map.getWidth())][id] * hRange)) + minHeight);*/
-			map.heightAt(i, j) = static_cast<qint8>(round(res[points::convert(i, j, map.getWidth())] * hRange))
+		for (qint32 j = 0; j < map.getHeight(); ++j)
+			map.heightAt(i, j) = static_cast<qint8>(std::nearbyint(res[points::convert(i, j, map.getWidth())] * hRange))
 			+ minHeight;
-		}
 
 	delete[] res;
 	delete[] tab[1];
