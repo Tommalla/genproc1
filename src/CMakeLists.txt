@@ -30,5 +30,5 @@ qt5_wrap_ui (FORMS ${FORMS})
 #qt5_wrap_cpp (WORLD_SRCS ${WORLD_HDRS})
 
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
-add_executable (WORLD ${WORLD_SRCS} ${FORMS} ${GUI_SOURCES})
-target_link_libraries (WORLD ${Qt5Widgets_LIBRARIES})
+add_executable (GenProc ${WORLD_SRCS} ${FORMS} ${GUI_SOURCES})
+target_link_libraries (GenProc ${Qt5Widgets_LIBRARIES})

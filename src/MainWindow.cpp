@@ -49,6 +49,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWi
 	landmap[2] = qRgb(238, 64, 0);
 
 	changeSmoothBox(0);
+	ui->smoothenBox->setVisible(false);
+	ui->smoothenCheckBox->setVisible(false);
 	changeWaterBox(0);
 	changeRationalize(0);
 
